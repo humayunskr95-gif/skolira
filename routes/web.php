@@ -74,34 +74,9 @@ use App\Http\Controllers\Accountant\AccountantReportController;
 
 //Driver Admin
 use App\Http\Controllers\Driver\DriverController;
-
 /*
 |--------------------------------------------------------------------------
-| 🌐 PUBLIC
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-})->name('main.home');
-
-// PUBLIC PRICING
-Route::get('/pricing', [SitePlanController::class,'pricing'])->name('pricing');
-
-// BUY PLAN (school admin only)
-Route::middleware(['auth'])->group(function () {
-    Route::post('/buy-plan/{id}', [SubscriptionController::class,'buy'])
-        ->name('subscription.buy');
-});
-
-// PAYMENT
-Route::post('/pay/{plan}', [PaymentController::class,'pay'])->name('payment.pay');
-Route::post('/payment-success', [PaymentController::class,'success'])->name('payment.success');
-
-
-/*
-|--------------------------------------------------------------------------
-| 🏫 TENANT (WORKS ON RENDER ✅)
+| 🏫 TENANT FIRST 🔥
 |--------------------------------------------------------------------------
 */
 
@@ -110,22 +85,18 @@ Route::prefix('{school}')
     ->name('school.')
     ->group(function () {
 
-    // 🏠 HOME
     Route::get('/', fn() => view('school_site.home'))->name('home');
 
-    // 🔐 AUTH
     Route::get('/login', [CustomAuthController::class,'login'])->name('login');
     Route::post('/login', [CustomAuthController::class,'loginStore'])->name('login.store');
 
     Route::post('/logout', [CustomAuthController::class,'logout'])->name('logout');
 
-    // 🎓 ADMISSION
     Route::prefix('admission')->name('admission.')->group(function () {
         Route::get('/', [SiteAdmissionController::class, 'form'])->name('form');
         Route::post('/', [SiteAdmissionController::class, 'submit'])->name('store');
     });
 
-    // 🌐 STATIC PAGES
     Route::view('/about', 'school_site.about')->name('about');
     Route::view('/features', 'school_site.features')->name('features');
     Route::view('/gallery', 'school_site.gallery')->name('gallery');
@@ -136,7 +107,28 @@ Route::prefix('{school}')
 
 /*
 |--------------------------------------------------------------------------
-| 🔐 ADMIN (MAIN DOMAIN)
+| 🌐 PUBLIC AFTER
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('main.home');
+
+Route::get('/pricing', [SitePlanController::class,'pricing'])->name('pricing');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/buy-plan/{id}', [SubscriptionController::class,'buy'])
+        ->name('subscription.buy');
+});
+
+Route::post('/pay/{plan}', [PaymentController::class,'pay'])->name('payment.pay');
+Route::post('/payment-success', [PaymentController::class,'success'])->name('payment.success');
+
+
+/*
+|--------------------------------------------------------------------------
+| 🔐 ADMIN
 |--------------------------------------------------------------------------
 */
 
