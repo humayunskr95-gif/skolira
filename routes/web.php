@@ -77,10 +77,14 @@ use App\Http\Controllers\Driver\DriverController;
 
 /*
 |--------------------------------------------------------------------------
-| 🌐 Public
+| 🌐 PUBLIC
 |--------------------------------------------------------------------------
 */
-// Route::get('/', fn () => view('welcome'));
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('main.home');
+
 // PUBLIC PRICING
 Route::get('/pricing', [SitePlanController::class,'pricing'])->name('pricing');
 
@@ -89,26 +93,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/buy-plan/{id}', [SubscriptionController::class,'buy'])
         ->name('subscription.buy');
 });
-Route::post('/pay/{plan}', [PaymentController::class,'pay'])
-    ->name('payment.pay');
 
-Route::post('/payment-success', [PaymentController::class,'success'])
-    ->name('payment.success');
-/*
-|--------------------------------------------------------------------------
-| 🔐 AUTH (Tenant Based)
-|--------------------------------------------------------------------------
-*/
+// PAYMENT
+Route::post('/pay/{plan}', [PaymentController::class,'pay'])->name('payment.pay');
+Route::post('/payment-success', [PaymentController::class,'success'])->name('payment.success');
+
 
 /*
 |--------------------------------------------------------------------------
-| SUBDOMAIN (SCHOOL SaaS) 🔥 FIRST
+| 🏫 TENANT (WORKS ON RENDER ✅)
 |--------------------------------------------------------------------------
 */
 
-Route::domain('{school}.onrender.com')
+Route::prefix('{school}')
     ->middleware(['tenant'])
-    ->name('school.') // 🔥 IMPORTANT (prefix for all routes)
+    ->name('school.')
     ->group(function () {
 
     // 🏠 HOME
@@ -137,24 +136,13 @@ Route::domain('{school}.onrender.com')
 
 /*
 |--------------------------------------------------------------------------
-| MAIN DOMAIN (SUPER ADMIN) 🔥 AFTER
+| 🔐 ADMIN (MAIN DOMAIN)
 |--------------------------------------------------------------------------
 */
 
-// MAIN DOMAIN
-Route::get('/', function () {
-    return view('welcome');
-})->name('main.home');
-
-// SUPER ADMIN LOGIN
 Route::get('/login', [CustomAuthController::class,'login'])->name('admin.login');
-
-// ✅ ADD THIS (IMPORTANT)
-Route::get('/login', [CustomAuthController::class,'login'])->name('login');
-
 Route::post('/login', [CustomAuthController::class,'loginStore']);
 
-// LOGOUT
 Route::post('/logout', [CustomAuthController::class,'logout'])
     ->name('admin.logout');
 /*
