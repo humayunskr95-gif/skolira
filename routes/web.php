@@ -106,7 +106,7 @@ Route::post('/payment-success', [PaymentController::class,'success'])
 |--------------------------------------------------------------------------
 */
 
-Route::domain('{school}.localhost')
+Route::domain('{school}.onrender.com')
     ->middleware(['tenant'])
     ->name('school.') // 🔥 IMPORTANT (prefix for all routes)
     ->group(function () {
