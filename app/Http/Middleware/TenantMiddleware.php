@@ -11,7 +11,12 @@ class TenantMiddleware
 {
     public function handle($request, Closure $next)
 {
-    $slug = $request->route('school'); // 🔥 important
+    $slug = $request->route('school');
+
+    // 🔥 custom mapping
+    if ($slug === 'skolira') {
+        $slug = 'scholar-academy';
+    }
 
     $school = \App\Models\School::where('slug', $slug)->first();
 
@@ -19,7 +24,6 @@ class TenantMiddleware
         abort(404);
     }
 
-    // optionally store globally
     app()->instance('school', $school);
 
     return $next($request);
