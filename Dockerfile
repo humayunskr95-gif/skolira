@@ -24,6 +24,7 @@ RUN composer install --ignore-platform-reqs
 RUN cp .env.example .env || true
 RUN php artisan key:generate || true
 RUN php artisan config:cache || true
+RUN php artisan migrate --force || true
 
 # Expose port
 EXPOSE 10000
